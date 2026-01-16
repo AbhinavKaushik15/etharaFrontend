@@ -14,11 +14,19 @@ const getApiUrl = () => {
   if (import.meta.env.PROD) {
     const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'unknown';
     console.error('❌ VITE_API_URL is not set in Vercel environment variables!');
-    console.error('Current host:', currentHost);
-    console.error('Please set VITE_API_URL in Vercel Dashboard → Settings → Environment Variables');
-    console.error('Value should be: https://your-backend-url.vercel.app/api');
+    console.error('Current frontend host:', currentHost);
+    console.error('');
+    console.error('📝 To fix:');
+    console.error('1. Go to Vercel Dashboard → Your Frontend Project');
+    console.error('2. Settings → Environment Variables');
+    console.error('3. Add: VITE_API_URL = https://your-backend.onrender.com/api');
+    console.error('   (Replace with your actual Render backend URL)');
+    console.error('4. Redeploy frontend');
+    console.error('');
+    console.error('💡 Your Render backend URL should be:');
+    console.error('   https://your-service-name.onrender.com/api');
     // Return a placeholder URL that will fail gracefully
-    return 'https://api-not-configured.vercel.app/api';
+    return 'https://api-not-configured.onrender.com/api';
   }
   
   // Development fallback
@@ -43,8 +51,9 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (!config.baseURL || config.baseURL.includes('api-not-configured')) {
-      const errorMsg = 'API URL not configured. Please set VITE_API_URL in Vercel environment variables.';
+      const errorMsg = 'API URL not configured. Please set VITE_API_URL in Vercel environment variables to your Render backend URL.';
       console.error('❌', errorMsg);
+      console.error('Example: VITE_API_URL=https://your-backend.onrender.com/api');
       return Promise.reject(new Error(errorMsg));
     }
     return config;
@@ -62,9 +71,10 @@ api.interceptors.response.use(
       console.error('❌ Network Error: Cannot connect to backend API');
       console.error('Backend URL:', error.config?.baseURL || 'Not set');
       console.error('Please check:');
-      console.error('1. Backend is deployed and running');
-      console.error('2. VITE_API_URL is set correctly in Vercel');
-      console.error('3. CORS is configured on backend');
+      console.error('1. Backend is deployed and running on Render');
+      console.error('2. VITE_API_URL is set correctly in Vercel (should be your Render backend URL)');
+      console.error('3. CORS is configured on backend to allow Vercel frontend');
+      console.error('4. Backend URL format: https://your-service.onrender.com/api');
     }
     return Promise.reject(error);
   }
