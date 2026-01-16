@@ -35,6 +35,11 @@ const AttendanceManagement = () => {
       setTodayAttendance(todayResponse.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
+      // Set empty arrays to prevent crashes
+      setEmployees([]);
+      setAttendanceRecords([]);
+      setFilteredRecords([]);
+      setTodayAttendance([]);
     } finally {
       setLoading(false);
     }

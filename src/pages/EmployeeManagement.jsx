@@ -34,6 +34,9 @@ const EmployeeManagement = () => {
       setFilteredEmployees(response.data);
     } catch (error) {
       console.error('Error fetching employees:', error);
+      // Set empty array to prevent crashes
+      setEmployees([]);
+      setFilteredEmployees([]);
     } finally {
       setLoading(false);
     }
