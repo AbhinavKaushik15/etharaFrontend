@@ -10,15 +10,38 @@ const getApiUrl = () => {
     return url.endsWith('/') ? url.slice(0, -1) : url;
   }
   
-  // In production (Vercel), show warning but don't break
-  if (import.meta.env.PROD) {
-    const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'unknown';
-    console.error('❌ VITE_API_URL is not set in Vercel environment variables!');
-    console.error('Current host:', currentHost);
-    console.error('Please set VITE_API_URL in Vercel Dashboard → Settings → Environment Variables');
-    console.error('Value should be: https://your-backend-url.vercel.app/api');
-    // Return a placeholder URL that will fail gracefully
-    return 'https://api-not-configured.vercel.app/api';
+  // In production (Vercel), try to auto-detect backend URL
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    const currentHost = window.location.hostname;
+    
+    // Try common backend URL patterns
+    const possibleBackendUrls = [
+      // Pattern 1: ethara-frontend -> ethara-backend
+      currentHost.replace('frontend', 'backend'),
+      // Pattern 2: ethara-frontend -> ethara-api
+      currentHost.replace('frontend', 'api'),
+      // Pattern 3: ethara-frontend -> ethara-server
+      currentHost.replace('frontend', 'server'),
+      // Pattern 4: Remove frontend suffix
+      currentHost.replace('-frontend', ''),
+      // Pattern 5: Add backend suffix
+      currentHost.replace('ethara-', 'ethara-backend-'),
+      // Pattern 6: Common backend naming
+      'ethara-backend.vercel.app',
+      'ethara-api.vercel.app',
+      'ethara-server.vercel.app',
+    ];
+    
+    // Try the first pattern (most common)
+    const autoDetectedUrl = `https://${possibleBackendUrls[0]}/api`;
+    
+    console.warn('⚠️ VITE_API_URL not set. Attempting auto-detection...');
+    console.warn('Current frontend:', currentHost);
+    console.warn('Trying backend URL:', autoDetectedUrl);
+    console.warn('If this doesn\'t work, set VITE_API_URL in Vercel Dashboard → Settings → Environment Variables');
+    
+    // Return auto-detected URL (will fail gracefully if wrong)
+    return autoDetectedUrl;
   }
   
   // Development fallback
@@ -42,11 +65,7 @@ const api = axios.create({
 // Add request interceptor for error handling
 api.interceptors.request.use(
   (config) => {
-    if (!config.baseURL || config.baseURL.includes('api-not-configured')) {
-      const errorMsg = 'API URL not configured. Please set VITE_API_URL in Vercel environment variables.';
-      console.error('❌', errorMsg);
-      return Promise.reject(new Error(errorMsg));
-    }
+    // Allow requests even if URL might be auto-detected (will fail gracefully)
     return config;
   },
   (error) => {
@@ -58,13 +77,20 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+    if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error') || error.code === 'ERR_NAME_NOT_RESOLVED') {
+      const backendUrl = error.config?.baseURL || 'Not set';
       console.error('❌ Network Error: Cannot connect to backend API');
-      console.error('Backend URL:', error.config?.baseURL || 'Not set');
-      console.error('Please check:');
-      console.error('1. Backend is deployed and running');
-      console.error('2. VITE_API_URL is set correctly in Vercel');
-      console.error('3. CORS is configured on backend');
+      console.error('Attempted Backend URL:', backendUrl);
+      console.error('');
+      console.error('🔧 To fix this:');
+      console.error('1. Go to Vercel Dashboard → Your Frontend Project');
+      console.error('2. Settings → Environment Variables');
+      console.error('3. Add: VITE_API_URL = https://your-backend-url.vercel.app/api');
+      console.error('4. Replace "your-backend-url" with your actual backend Vercel URL');
+      console.error('5. Redeploy the frontend');
+      console.error('');
+      console.error('💡 Your backend URL should be something like:');
+      console.error('   https://ethara-backend-xxxxx.vercel.app/api');
     }
     return Promise.reject(error);
   }
