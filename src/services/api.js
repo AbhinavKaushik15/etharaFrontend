@@ -1,11 +1,8 @@
 // API service for employees, attendance, and dashboard
 import axios from 'axios';
 
-// Use environment variable for API URL, fallback to Render backend for production, localhost for development
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.PROD 
-    ? 'https://etharabackend-1.onrender.com/api' 
-    : 'http://localhost:5000/api');
+// Use environment variable for API URL, fallback to localhost for development
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance with default config
 const api = axios.create({
