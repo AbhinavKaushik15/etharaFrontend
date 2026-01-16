@@ -15,27 +15,27 @@ const api = axios.create({
 export const employeesAPI = {
   getAll: async () => {
     const response = await api.get('/employees');
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   getById: async (id) => {
     const response = await api.get(`/employees/${id}`);
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   create: async (employee) => {
     const response = await api.post('/employees', employee);
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   update: async (id, employee) => {
     const response = await api.put(`/employees/${id}`, employee);
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   delete: async (id) => {
     const response = await api.delete(`/employees/${id}`);
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
 };
 
@@ -44,12 +44,12 @@ export const attendanceAPI = {
   getAll: async (date = null) => {
     const params = date ? { date } : {};
     const response = await api.get('/attendance', { params });
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   getByEmployeeId: async (employeeId) => {
     const response = await api.get(`/attendance/${employeeId}`);
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   markAttendance: async (employeeId, date, status) => {
@@ -58,13 +58,13 @@ export const attendanceAPI = {
       date,
       status,
     });
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
   
   getTodayAttendance: async () => {
     const today = new Date().toISOString().split('T')[0];
     const response = await api.get('/attendance', { params: { date: today } });
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
 };
 
@@ -72,6 +72,6 @@ export const attendanceAPI = {
 export const dashboardAPI = {
   getStats: async () => {
     const response = await api.get('/dashboard/stats');
-    return response.data;
+    return { data: response.data.data || response.data, success: response.data.success };
   },
 };

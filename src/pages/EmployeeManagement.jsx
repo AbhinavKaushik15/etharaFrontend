@@ -47,10 +47,10 @@ const EmployeeManagement = () => {
 
     const filtered = employees.filter(
       (emp) =>
-        emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.id.toLowerCase().includes(searchTerm.toLowerCase())
+        (emp.name && emp.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (emp.email && emp.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (emp.department && emp.department.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (emp.id && emp.id.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredEmployees(filtered);
   };

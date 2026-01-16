@@ -55,7 +55,7 @@ const Dashboard = () => {
           employeesAPI.getAll(),
         ]);
         setStats(statsResponse.data);
-        setRecentEmployees(employeesResponse.data.slice(0, 5));
+        setRecentEmployees((employeesResponse.data || []).slice(0, 5));
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
