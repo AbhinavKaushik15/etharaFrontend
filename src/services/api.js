@@ -14,33 +14,44 @@ const getApiUrl = () => {
   if (import.meta.env.PROD && typeof window !== 'undefined') {
     const currentHost = window.location.hostname;
     
-    // Try common backend URL patterns
-    const possibleBackendUrls = [
-      // Pattern 1: ethara-frontend -> ethara-backend
-      currentHost.replace('frontend', 'backend'),
-      // Pattern 2: ethara-frontend -> ethara-api
-      currentHost.replace('frontend', 'api'),
-      // Pattern 3: ethara-frontend -> ethara-server
-      currentHost.replace('frontend', 'server'),
-      // Pattern 4: Remove frontend suffix
-      currentHost.replace('-frontend', ''),
-      // Pattern 5: Add backend suffix
-      currentHost.replace('ethara-', 'ethara-backend-'),
-      // Pattern 6: Common backend naming
-      'ethara-backend.vercel.app',
-      'ethara-api.vercel.app',
-      'ethara-server.vercel.app',
-    ];
+    // Try common backend URL patterns based on frontend URL
+    let autoDetectedUrl = null;
     
-    // Try the first pattern (most common)
-    const autoDetectedUrl = `https://${possibleBackendUrls[0]}/api`;
+    // Pattern 1: ethara-frontend-flax -> ethara-backend-flax (most common)
+    if (currentHost.includes('frontend')) {
+      autoDetectedUrl = `https://${currentHost.replace('frontend', 'backend')}/api`;
+    }
+    // Pattern 2: ethara-frontend -> ethara-api
+    else if (currentHost.includes('frontend')) {
+      autoDetectedUrl = `https://${currentHost.replace('frontend', 'api')}/api`;
+    }
+    // Pattern 3: Remove -frontend suffix
+    else if (currentHost.includes('-frontend')) {
+      autoDetectedUrl = `https://${currentHost.replace('-frontend', '')}/api`;
+    }
+    // Pattern 4: Add -backend before domain
+    else {
+      const parts = currentHost.split('.');
+      if (parts.length > 0) {
+        parts[0] = parts[0].replace('ethara-', 'ethara-backend-');
+        autoDetectedUrl = `https://${parts.join('.')}/api`;
+      }
+    }
     
-    console.warn('⚠️ VITE_API_URL not set. Attempting auto-detection...');
-    console.warn('Current frontend:', currentHost);
-    console.warn('Trying backend URL:', autoDetectedUrl);
-    console.warn('If this doesn\'t work, set VITE_API_URL in Vercel Dashboard → Settings → Environment Variables');
+    // Fallback to common patterns
+    if (!autoDetectedUrl) {
+      autoDetectedUrl = 'https://ethara-backend.vercel.app/api';
+    }
     
-    // Return auto-detected URL (will fail gracefully if wrong)
+    console.warn('⚠️ VITE_API_URL not set. Using auto-detected backend URL...');
+    console.warn('Frontend:', currentHost);
+    console.warn('Auto-detected backend:', autoDetectedUrl);
+    console.warn('');
+    console.warn('📝 To set manually:');
+    console.warn('1. Vercel Dashboard → Frontend Project → Settings → Environment Variables');
+    console.warn('2. Add: VITE_API_URL = ' + autoDetectedUrl);
+    console.warn('3. Redeploy frontend');
+    
     return autoDetectedUrl;
   }
   
