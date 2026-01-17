@@ -1,7 +1,7 @@
 // API service for employees, attendance, and dashboard
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://etharabackend-1.onrender.com/api';
 
 // Create axios instance with default config
 const api = axios.create({
