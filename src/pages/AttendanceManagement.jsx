@@ -25,21 +25,16 @@ const AttendanceManagement = () => {
         employeesAPI.getAll(),
         attendanceAPI.getAll(),
       ]);
-      setEmployees(employeesResponse.data || []);
-      setAttendanceRecords(attendanceResponse.data || []);
-      setFilteredRecords(attendanceResponse.data || []);
+      setEmployees(employeesResponse.data);
+      setAttendanceRecords(attendanceResponse.data);
+      setFilteredRecords(attendanceResponse.data);
       
       // Fetch today's attendance
       const today = new Date().toISOString().split('T')[0];
       const todayResponse = await attendanceAPI.getAll(today);
-      setTodayAttendance(todayResponse.data || []);
+      setTodayAttendance(todayResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
-      // Set empty arrays to prevent crashes
-      setEmployees([]);
-      setAttendanceRecords([]);
-      setFilteredRecords([]);
-      setTodayAttendance([]);
     } finally {
       setLoading(false);
     }

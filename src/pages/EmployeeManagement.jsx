@@ -34,9 +34,6 @@ const EmployeeManagement = () => {
       setFilteredEmployees(response.data);
     } catch (error) {
       console.error('Error fetching employees:', error);
-      // Set empty array to prevent crashes
-      setEmployees([]);
-      setFilteredEmployees([]);
     } finally {
       setLoading(false);
     }
@@ -50,10 +47,10 @@ const EmployeeManagement = () => {
 
     const filtered = employees.filter(
       (emp) =>
-        (emp.name && emp.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (emp.email && emp.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (emp.department && emp.department.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (emp.id && emp.id.toLowerCase().includes(searchTerm.toLowerCase()))
+        emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
   };

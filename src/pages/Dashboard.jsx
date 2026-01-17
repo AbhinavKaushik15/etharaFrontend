@@ -55,20 +55,9 @@ const Dashboard = () => {
           employeesAPI.getAll(),
         ]);
         setStats(statsResponse.data);
-        setRecentEmployees((employeesResponse.data || []).slice(0, 5));
+        setRecentEmployees(employeesResponse.data.slice(0, 5));
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        // Set default values to prevent crashes
-        setStats({
-          totalEmployees: 0,
-          presentToday: 0,
-          absentToday: 0,
-          totalDepartments: 0,
-          weeklyTrend: [],
-          departmentDistribution: [],
-          todayAttendanceStatus: [],
-        });
-        setRecentEmployees([]);
       } finally {
         setLoading(false);
       }
